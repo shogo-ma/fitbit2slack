@@ -4,6 +4,8 @@
 import config
 import fitbit
 import datetime
+import json
+import requests
 
 
 def getYesterday():
@@ -30,13 +32,22 @@ def getDailyWeight():
 
 
 # slackに投稿する
-def postSlack():
-    pass
+def postSlack(message):
+    requests.post(config.INCOMING_WEBHOOK, data=json.dumps({
+        "text": message
+    }))
 
 
 def main():
     date, bmi, weight = getDailyWeight()
-    print(date, bmi, weight)
+
+    message = "{} 日の体重は {} kg でした。BMIは {} です。".format(
+        date,
+        weight,
+        bmi
+    )
+
+    postSlack(message)
 
 
 if __name__ == "__main__":
